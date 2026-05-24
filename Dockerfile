@@ -3,19 +3,16 @@ FROM node:22-alpine AS assets
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-# Disable pnpm's minimumReleaseAge supply-chain check for all commands in
-# this stage — the package was recently published and fails the default cutoff.
-ENV npm_config_minimum_release_age=0
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY resources/ resources/
 COPY public/    public/
-COPY vite.config.js tsconfig.json ./
+COPY vite.config.js ./
 
 RUN pnpm run build
 

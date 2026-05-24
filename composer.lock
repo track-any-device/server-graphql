@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c97e3a5bbe21d0d5414be78f6bc65642",
+    "content-hash": "f0a9601d934ba2866e8c445e79bd5a9d",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -8122,11 +8122,17 @@
         },
         {
             "name": "track-any-device/core",
-            "version": "dev-main",
+            "version": "v0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/track-any-device/package-core.git",
+                "reference": "d7691f77c8f50f2949c79da1fc34dd106351bdf2"
+            },
             "dist": {
-                "type": "path",
-                "url": "../packages/php/core",
-                "reference": "811efcb8f1e957b42523ba90bb56dbb2f7e8ccd5"
+                "type": "zip",
+                "url": "https://api.github.com/repos/track-any-device/package-core/zipball/d7691f77c8f50f2949c79da1fc34dd106351bdf2",
+                "reference": "d7691f77c8f50f2949c79da1fc34dd106351bdf2",
+                "shasum": ""
             },
             "require": {
                 "laravel/fortify": "^1.0",
@@ -8134,10 +8140,13 @@
                 "laravel/sanctum": "^4.0",
                 "php": "^8.3",
                 "stancl/tenancy": "^3.10",
-                "track-any-device/sms-gateway": "*@dev"
+                "track-any-device/sms-gateway": "^1.0"
             },
             "type": "library",
             "extra": {
+                "boost": {
+                    "skills": "resources/boost/skills"
+                },
                 "laravel": {
                     "providers": [
                         "TrackAnyDevice\\Core\\CoreServiceProvider"
@@ -8147,28 +8156,40 @@
             "autoload": {
                 "psr-4": {
                     "TrackAnyDevice\\Core\\": "src/",
-                    "TrackAnyDevice\\Core\\Database\\Factories\\": "database/factories/",
-                    "TrackAnyDevice\\Core\\Database\\Seeders\\": "database/seeders/"
+                    "TrackAnyDevice\\Core\\Database\\Seeders\\": "database/seeders/",
+                    "TrackAnyDevice\\Core\\Database\\Factories\\": "database/factories/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Core package for the Track Any Device platform.",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/track-any-device/package-core/issues",
+                "source": "https://github.com/track-any-device/package-core/tree/v0.0.2"
+            },
+            "time": "2026-05-23T16:45:47+00:00"
         },
         {
             "name": "track-any-device/sms-gateway",
-            "version": "dev-main",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/track-any-device/package-sms-gateway.git",
+                "reference": "c9bb8258e0b5cffe7475b6a31cc30a1cf6e0caf3"
+            },
             "dist": {
-                "type": "path",
-                "url": "../packages/php/sms-gateway",
-                "reference": "7faf134ee88c61de735e138f8275912554218000"
+                "type": "zip",
+                "url": "https://api.github.com/repos/track-any-device/package-sms-gateway/zipball/c9bb8258e0b5cffe7475b6a31cc30a1cf6e0caf3",
+                "reference": "c9bb8258e0b5cffe7475b6a31cc30a1cf6e0caf3",
+                "shasum": ""
             },
             "require": {
-                "laravel/framework": "^13.7",
+                "illuminate/http": "^11.0|^12.0|^13.0",
+                "illuminate/log": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "nesbot/carbon": "^3.0",
                 "php": "^8.3"
             },
             "type": "library",
@@ -8177,6 +8198,11 @@
                     "providers": [
                         "TrackAnyDevice\\SmsGateway\\SmsGatewayServiceProvider"
                     ]
+                },
+                "laravel-boost": {
+                    "skills": [
+                        "resources/boost/skills/sms-gateway"
+                    ]
                 }
             },
             "autoload": {
@@ -8184,27 +8210,36 @@
                     "TrackAnyDevice\\SmsGateway\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "SMS gateway HTTP client for the Track Any Device platform.",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/track-any-device/package-sms-gateway/issues",
+                "source": "https://github.com/track-any-device/package-sms-gateway/tree/v1.0.3"
+            },
+            "time": "2026-05-23T16:47:47+00:00"
         },
         {
             "name": "track-any-device/sso-client",
-            "version": "dev-main",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/track-any-device/package-sso-client.git",
+                "reference": "bb3574f26b31cde680ef1e92856532f863ffec3a"
+            },
             "dist": {
-                "type": "path",
-                "url": "../packages/php/sso-client",
-                "reference": "45edcc8a585dad4c4561ee4ec7dbb15f981acf83"
+                "type": "zip",
+                "url": "https://api.github.com/repos/track-any-device/package-sso-client/zipball/bb3574f26b31cde680ef1e92856532f863ffec3a",
+                "reference": "bb3574f26b31cde680ef1e92856532f863ffec3a",
+                "shasum": ""
             },
             "require": {
                 "laravel/framework": "^13.7",
                 "laravel/socialite": "^5.0",
                 "php": "^8.3",
-                "track-any-device/core": "*@dev"
+                "track-any-device/core": "^0.0.2"
             },
             "type": "library",
             "extra": {
@@ -8219,13 +8254,16 @@
                     "TrackAnyDevice\\SsoClient\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "OAuth2 SSO client — token verification, callback controller, and route helper.",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/track-any-device/package-sso-client/issues",
+                "source": "https://github.com/track-any-device/package-sso-client/tree/v0.1.0"
+            },
+            "time": "2026-05-23T17:35:28+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -10975,15 +11013,12 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "track-any-device/core": 20,
-        "track-any-device/sso-client": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
