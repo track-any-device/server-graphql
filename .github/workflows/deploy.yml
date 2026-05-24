@@ -1,0 +1,125 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/server-graphql
+
+jobs:
+  # ── 1. Calculate next semver and create git tag ──────────────────────────────
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.tag.outputs.new_tag }}
+      version: ${{ steps.tag.outputs.new_version }}
+      changelog: ${{ steps.tag.outputs.changelog }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # full history so tag action can walk commits
+
+      - name: Bump version and push tag
+        id: tag
+        uses: mathieudutour/github-tag-action@v6.2
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch     # patch unless commit message says otherwise
+          # Conventional-commit prefixes that trigger a minor bump:
+          # feat: → minor | fix:/chore:/etc → patch | BREAKING CHANGE → major
+
+  # ── 2. Build Docker image and push to Docker Hub ─────────────────────────────
+  build-and-push:
+    name: Build & push image
+    runs-on: ubuntu-latest
+    needs: version
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=raw,value=${{ needs.version.outputs.tag }}
+            type=raw,value=latest
+            type=sha,prefix=sha-,format=short
+
+      - name: Build and push
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max
+
+  # ── 3. Create GitHub release ─────────────────────────────────────────────────
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [version, build-and-push]
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          name: ${{ needs.version.outputs.tag }}
+          body: |
+            ## What's changed
+
+            ${{ needs.version.outputs.changelog }}
+
+            ## Docker
+
+            ```bash
+            docker pull ${{ env.IMAGE }}:${{ needs.version.outputs.tag }}
+            ```
+
+            **Digest:** `${{ needs.build-and-push.outputs.digest }}`
+          generate_release_notes: true
+
+      - name: Summary
+        run: |
+          echo "### Release ${{ needs.version.outputs.tag }} published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Docker tags pushed:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ env.IMAGE }}:${{ needs.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "${{ env.IMAGE }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Digest:** \`${{ needs.build-and-push.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY
