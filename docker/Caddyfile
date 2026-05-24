@@ -1,0 +1,27 @@
+{
+    frankenphp
+    admin off
+
+    {$CADDY_GLOBAL_OPTIONS}
+}
+
+{$CADDY_SERVER_NAME:localhost} {
+    root * /app/public
+
+    encode zstd br gzip
+
+    @notStatic not file
+
+    route {
+        # Health-check endpoint
+        respond /up 200
+
+        file_server
+
+        php_server {
+            {$FRANKENPHP_CONFIG}
+        }
+    }
+
+    {$CADDY_EXTRA_CONFIG}
+}

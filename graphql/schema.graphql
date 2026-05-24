@@ -1,0 +1,142 @@
+# ── Public catalog types ──────────────────────────────────────────────────────
+# These are exposed without authentication for the central marketing site.
+
+"A hardware device type / product available in the store."
+type DeviceType {
+    id: ID!
+    name: String!
+    slug: String!
+    description: String
+    image: String
+    price_usd: Float
+    price_pkr: Float
+    is_featured: Boolean
+    is_active: Boolean
+    chips: [Chip!]! @belongsToMany
+    sensors: [Sensor!]! @belongsToMany
+    computeBoards: [ComputeBoard!]! @belongsToMany(relation: "computeBoards")
+}
+
+"A microchip or integrated circuit used in device builds."
+type Chip {
+    id: ID!
+    name: String!
+    manufacturer: String
+    type: String
+    datasheet_url: String
+    specifications: String
+    notes: String
+}
+
+"A compute board (Arduino, Raspberry Pi, ESP32, etc.) for custom device builds."
+type ComputeBoard {
+    id: ID!
+    name: String!
+    manufacturer: String
+    mcu: String
+    flash_kb: Int
+    ram_kb: Int
+    operating_voltage: Float
+    datasheet_url: String
+    notes: String
+}
+
+"A sensor type supported by the platform."
+type Sensor {
+    id: ID!
+    name: String!
+    label: String
+    slug: String!
+    unit: String
+    data_type: String
+    protocol: String
+    description: String
+    icon: String
+}
+
+"A platform solution / use-case (fleet, government, IoT, etc.)."
+type Solution {
+    id: ID!
+    title: String!
+    slug: String!
+    description: String
+    icon_name: String
+    gradient_from: String
+    gradient_to: String
+    image_path: String
+    cta_label: String
+    cta_href: String
+    is_featured: Boolean
+    is_active: Boolean
+}
+
+# ── Authenticated types ───────────────────────────────────────────────────────
+
+"A platform user (central staff or end-user)."
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    role: String
+}
+
+"A tenant organisation on the platform."
+type Tenant {
+    id: ID!
+    name: String!
+    slug: String!
+    color_scheme: String
+}
+
+"A tracked device belonging to a tenant."
+type Device {
+    id: ID!
+    imei: String!
+    name: String
+    status: String
+    tenant: Tenant @belongsTo
+}
+
+# ── Queries ───────────────────────────────────────────────────────────────────
+
+type Query {
+    # ── Public — no auth required (marketing site) ────────────────────────────
+
+    "All active device types / products."
+    deviceTypes: [DeviceType!]! @all(scopes: ["active"])
+
+    "Find a single device type by slug."
+    deviceType(slug: String! @eq): DeviceType @find
+
+    "Featured device types for the homepage."
+    featuredDeviceTypes: [DeviceType!]! @all(scopes: ["featured"])
+
+    "All chips in the component catalog."
+    chips: [Chip!]! @all
+
+    "All compute boards."
+    computeBoards: [ComputeBoard!]! @all
+
+    "All sensors supported by the platform."
+    sensors: [Sensor!]! @all
+
+    "All active solutions."
+    solutions: [Solution!]! @all(scopes: ["active"])
+
+    "Featured solutions for the homepage."
+    featuredSolutions: [Solution!]! @all(scopes: ["featured"])
+
+    # ── Authenticated — central staff only ────────────────────────────────────
+
+    "The currently authenticated user."
+    me: User @auth(guard: "sanctum")
+
+    "All platform users."
+    users: [User!]! @all @guard(with: ["sanctum"])
+
+    "All tenants."
+    tenants: [Tenant!]! @all @guard(with: ["sanctum"])
+
+    "All devices across all tenants."
+    devices: [Device!]! @all @guard(with: ["sanctum"])
+}

@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+
+# Laravel
+/vendor/
+/node_modules/
+/.env
+/.env.backup
+/.phpunit.result.cache
+/storage/framework/cache/data/
+/storage/framework/sessions/
+/storage/framework/testing/
+/storage/framework/views/
+/storage/logs/*.log
+/bootstrap/cache/
+
+# Logs
+supervisord.log
+*.log
+
+# Build
+/public/hot
+/public/storage
+/public/build/
